@@ -1,0 +1,35 @@
+@page "/chat"
+@using BlazorClient.Services
+@inject ChatService ChatService
+
+<div>
+    <ul>
+        @foreach (var message in ChatService.Messages)
+        {
+            <li><strong>@message.User:</strong> @message.Message</li>
+        }
+    </ul>
+    <input @bind="message" placeholder="Enter your message" />
+    <button @onclick="SendMessage">Send</button>
+    <button @onclick="Connect">Connect</button>
+</div>
+
+@code {
+    private string message;
+
+    protected override void OnInitialized()
+    {
+        ChatService.OnMessageReceived += StateHasChanged;
+    }
+
+    private async Task Connect()
+    {
+        await ChatService.ConnectAsync();
+    }
+
+    private async Task SendMessage()
+    {
+        await ChatService.SendMessageAsync("BlazorClient", message);
+        message = string.Empty;
+    }
+}
